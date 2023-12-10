@@ -26,7 +26,7 @@ export default function Home() {
     fetch('/api/redis')
       .then(response => response.json())
       .then(data => {
-        const parsed = data.cpus_avg.reduce((acc, cpu: any) => {
+        const parsed = data.cpus_avg.reduce((acc:any, cpu: any) => {
           const keys = Object.keys(cpu);
           const key = `${keys[0]}`;
           acc[key] = parseFloat(cpu[key].toFixed(2));
@@ -40,7 +40,7 @@ export default function Home() {
         }
 
         const usages = Object.keys(data.cpus_stats).reduce((acc: any, cpuKey: any) => {
-          acc[cpuKey] = data.cpus_stats[cpuKey].map((cpu: any, index: number) => {return {usage: parseFloat(cpu.usage.toFixed(2)), 'name': index}});
+          acc[cpuKey] = data.cpus_stats[cpuKey].map((cpu: any, index: number) => {return {usage: parseFloat(cpu.usage.toFixed(2)), 'name': index+1}});
           return acc;        
         },{})
         console.log(usages)
@@ -104,7 +104,7 @@ export default function Home() {
         {Object.keys(cpusUsage).map((cpu:string, index:number) => {
           
           return <div className='dashboard'>
-            <p>{cpu} usage in last 10 seconds</p>
+            <p>{cpu} usage in last minute</p>
             <LineChart className='dash' width={600} height={300} data={cpusUsage[cpu]} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -125,9 +125,4 @@ export default function Home() {
       </main>
     </>
   )
-}
-
-function getRandomHexColor() {
-  const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-  return `#${randomColor.padStart(6, '0')}`;
 }

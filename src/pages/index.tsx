@@ -20,7 +20,7 @@ export default function Home() {
 
   const lineColors = ['#8884d8', '#82ca9d', '#aa8437', '#ff7f0e', '#d62728', '#9467bd', '#8c564b', 
   '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#1f77b4', '#aec7e8', '#ffbb78', '#98df8a', '#ff9896',];
-  const [data, setData] = useState<RedisData>({});
+  const [data, setData] = useState<any>({});
 
   function loadData(iteration:number){
     fetch('/api/redis')

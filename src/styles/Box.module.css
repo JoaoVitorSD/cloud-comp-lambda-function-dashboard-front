@@ -1,0 +1,23 @@
+.box {
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+    transition: all 0.3s;
+    background: white;
+    display: flex;
+    font-size: 15px;
+    gap: 5px;
+    align-items: center;
+    border: 1px solid #ccc;
+}
+
+.box:hover {
+    box-shadow: 0 5 10px 0 rgba(0, 0, 0, 0.8);
+    padding: 20px;
+}
+.box-info{
+    border-right: 1px solid #ccc;
+}
+.box span{
+    font-size: 10px;
+}

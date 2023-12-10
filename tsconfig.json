@@ -14,9 +14,11 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "components/*": ["./src/*"]
+      "@components/*": ["./components/*"],
+      "@types": ["./src/types.ts"],
+      "@styles/*": ["./src/styles/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/redis.js"],
   "exclude": ["node_modules"]
 }

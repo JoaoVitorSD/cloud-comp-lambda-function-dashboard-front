@@ -9,13 +9,14 @@ export default function Home() {
 
   const [cpus, setCpus] = useState<any>([]);
   const [cpuKeys, setCpusKey] = useState<any>([]);
-  let iteration = 1;
+  const [interation, setInteration] = useState<number>(1);
 
   const [cpusUsage, setCpusUsage] = useState<any>({});
 
 
   const lineColors = ['#8884d8', '#82ca9d', '#aa8437', '#ff7f0e', '#d62728', '#9467bd', '#8c564b',
-    '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#1f77b4', '#aec7e8', '#ffbb78', '#98df8a', '#ff9896',];
+    '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#1f77b4', '#aec7e8', '#ffbb78', '#98df8a', '#ff9896',
+    '#c5b0d5', '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5', '#aec7e8', '#ffbb78', '#98df8a'];
   const [data, setData] = useState<any>({});
 
   async function loadData(iteration: number) {
@@ -24,7 +25,7 @@ export default function Home() {
       .then(response => {
         if (response.status == 200) return response.json();
         toast.error("Failed to load data", {
-          position: "top-center",
+          position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -60,6 +61,9 @@ export default function Home() {
   }, [])
 
   async function alternateLoadData(increment: number) {
+    if(increment <= 10){
+      setInteration(increment);
+    }
     const toastId = toast("Loading data", { isLoading: true, position: "top-right" })
     await loadData(increment);
     toast.dismiss(toastId);
@@ -93,7 +97,7 @@ export default function Home() {
           </div>
 
           <div className='dashboard'>
-            <p>CPUs AVG usage in last 10 seconds</p>
+            <p>CPUs AVG usage in last {interation*5} seconds</p>
             <ResponsiveContainer width="100%" height={300}>
 
               <LineChart data={cpus} >

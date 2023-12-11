@@ -60,8 +60,7 @@ export default function Home() {
   }, [])
 
   async function alternateLoadData(increment: number) {
-    let toastId: Id = 0;
-    toastId = toast("Loading data", { isLoading: true, position: "top-right" })
+    const toastId = toast("Loading data", { isLoading: true, position: "top-right" })
     await loadData(increment);
     toast.dismiss(toastId);
     setTimeout(() => alternateLoadData(increment + 1), 5000);

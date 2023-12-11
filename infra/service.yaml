@@ -5,7 +5,7 @@ metadata:
   labels:
     app: dashboard-front
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: dashboard-front
   ports:

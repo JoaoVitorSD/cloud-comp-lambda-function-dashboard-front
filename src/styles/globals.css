@@ -6,7 +6,23 @@
   --blue: #0D2149;
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+}
 
+/* Track */
+
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--blue);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: darkblue;
+}
 body{
   font-family: 'Roboto', sans-serif;
   background-color: #ffffff;

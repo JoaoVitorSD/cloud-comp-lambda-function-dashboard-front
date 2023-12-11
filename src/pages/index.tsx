@@ -19,11 +19,11 @@ export default function Home() {
   const [data, setData] = useState<any>({});
 
   async function loadData(iteration: number) {
-    
-   await fetch('/api/redis')
+
+    await fetch('/api/redis')
       .then(response => {
         if (response.status == 200) return response.json();
-        toast.error("Failed to load data",{
+        toast.error("Failed to load data", {
           position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -33,7 +33,7 @@ export default function Home() {
         return null;
       })
       .then((data: any) => {
-        if(!data) return;
+        if (!data) return;
         const parsed = data.cpus_avg.reduce((acc: any, cpu: any) => {
           const keys = Object.keys(cpu);
           const key = `${keys[0]}`;
@@ -60,16 +60,11 @@ export default function Home() {
   }, [])
 
   async function alternateLoadData(increment: number) {
-    let toastId : Id = 0;
-    if(increment == 1){
-      toastId = toast("Loading data", { isLoading: true, position: "top-right" })
-    }
+    let toastId: Id = 0;
+    toastId = toast("Loading data", { isLoading: true, position: "top-right" })
     await loadData(increment);
-    
-    if(increment === 1){
-      toast.dismiss(toastId);
-    }
-    setTimeout(() => alternateLoadData(increment+1), 5000);
+    toast.dismiss(toastId);
+    setTimeout(() => alternateLoadData(increment + 1), 5000);
 
   }
 
@@ -95,33 +90,33 @@ export default function Home() {
             <Box name='Cached Response' description='Percentage of response that had cached.' value={data.cached_percent} />
             <Box name='Outgoing Traffic' description='Percentage of response in relation to request.' value={data.outgoing_traffic} />
             <Box name='Memory Usage' description='Vrtual Memory Used' value={data.virtual_memory_used} />
-            <Box name='Memory Available' description='Vrtual Memory Available' value={data.virtual_memory_used ?100 - data.virtual_memory_used: null} />
+            <Box name='Memory Available' description='Vrtual Memory Available' value={data.virtual_memory_used ? 100 - data.virtual_memory_used : null} />
           </div>
 
           <div className='dashboard'>
             <p>CPUs AVG usage in last 10 seconds</p>
             <ResponsiveContainer width="100%" height={300}>
 
-            <LineChart  data={cpus} >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <Tooltip />
-              <YAxis />
-              <Legend />
-              {cpuKeys.map((cpu: any, index: number) => {
-                return (
-                  <Line
-                    key={index + 1}
-                    type="monotone"
-                    dataKey={cpu}
-                    stroke={lineColors[index]}
-                    strokeWidth={2}
-                  />
-                )
-              }
-              )}
-            </LineChart>
-              </ResponsiveContainer>
+              <LineChart data={cpus} >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <Tooltip />
+                <YAxis />
+                <Legend />
+                {cpuKeys.map((cpu: any, index: number) => {
+                  return (
+                    <Line
+                      key={index + 1}
+                      type="monotone"
+                      dataKey={cpu}
+                      stroke={lineColors[index]}
+                      strokeWidth={2}
+                    />
+                  )
+                }
+                )}
+              </LineChart>
+            </ResponsiveContainer>
           </div>
           {Object.keys(cpusUsage).map((cpu: string, index: number) => {
             return <div className='dashboard'>
@@ -129,26 +124,26 @@ export default function Home() {
               <p>{cpu} usage in last minute</p>
               <ResponsiveContainer width="100%" height={300}>
 
-              <LineChart className='dash' data={cpusUsage[cpu]}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <Tooltip />
-                <YAxis />
-                <Legend />
-                <Line
-                  key={index + 1}
-                  type="monotone"
-                  dataKey='usage'
-                  stroke={lineColors[index]}
-                  strokeWidth={2}
+                <LineChart className='dash' data={cpusUsage[cpu]}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <Tooltip />
+                  <YAxis />
+                  <Legend />
+                  <Line
+                    key={index + 1}
+                    type="monotone"
+                    dataKey='usage'
+                    stroke={lineColors[index]}
+                    strokeWidth={2}
                   />
-              </LineChart>
-                  </ResponsiveContainer>
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           })}
         </div>
       </main>
-      <ToastContainer/>
+      <ToastContainer />
     </>
   )
 }

@@ -1,13 +1,9 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
 import Box from '@components/box'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-
-import { RedisData } from '@types';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useEffect, useState } from 'react';
-import { cp } from 'fs';
-import { cpuUsage } from 'process';
+import { Id, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export default function Home() {
 
 
@@ -22,14 +18,22 @@ export default function Home() {
     '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#1f77b4', '#aec7e8', '#ffbb78', '#98df8a', '#ff9896',];
   const [data, setData] = useState<any>({});
 
-  function loadData(iteration: number) {
-    fetch('/api/redis')
+  async function loadData(iteration: number) {
+    
+   await fetch('/api/redis')
       .then(response => {
         if (response.status == 200) return response.json();
-        alert("Failed to load data")
-        throw new Error('Failed to load data');
+        toast.error("Failed to load data",{
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true
+        })
+        return null;
       })
       .then((data: any) => {
+        if(!data) return;
         const parsed = data.cpus_avg.reduce((acc: any, cpu: any) => {
           const keys = Object.keys(cpu);
           const key = `${keys[0]}`;
@@ -43,22 +47,31 @@ export default function Home() {
           setCpus((prevCpus: any) => [...prevCpus, { 'name': iteration, ...parsed }])
         }
 
-        debugger;
         const usages = Object.keys(data.cpu_stats).reduce((acc: any, cpuKey: any) => {
           acc[cpuKey] = data.cpu_stats[cpuKey].map((cpu: any, index: number) => { return { usage: parseFloat(cpu.usage.toFixed(2)), 'name': index + 1 } });
           return acc;
         }, {})
-        console.log(usages)
         setCpusUsage(usages);
         setData(data)
       })
   }
   useEffect(() => {
-    loadData(1);
-    const inverval = setInterval(() => loadData(++iteration), 1000);
-
-    return () => clearInterval(inverval);
+    alternateLoadData(1);
   }, [])
+
+  async function alternateLoadData(increment: number) {
+    let toastId : Id = 0;
+    if(increment == 1){
+      toastId = toast("Loading data", { isLoading: true, position: "top-right" })
+    }
+    await loadData(increment);
+    
+    if(increment === 1){
+      toast.dismiss(toastId);
+    }
+    setTimeout(() => alternateLoadData(increment+1), 10000);
+
+  }
 
   useEffect(() => {
     const cpuKeys = Object.keys(cpus[0] || {}).filter((key) => key !== 'name');
@@ -82,12 +95,14 @@ export default function Home() {
             <Box name='Cached Response' description='Percentage of response that had cached.' value={data.cached_percent} />
             <Box name='Outgoing Traffic' description='Percentage of response in relation to request.' value={data.outgoing_traffic} />
             <Box name='Memory Usage' description='Vrtual Memory Used' value={data.virtual_memory_used} />
-            <Box name='Memory Available' description='Vrtual Memory Available' value={100 - data.virtual_memory_used} />
+            <Box name='Memory Available' description='Vrtual Memory Available' value={data.virtual_memory_used ?100 - data.virtual_memory_used: null} />
           </div>
 
           <div className='dashboard'>
             <p>CPUs AVG usage in last 10 seconds</p>
-            <LineChart width={600} height={300} data={cpus} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
+            <ResponsiveContainer width="100%" height={300}>
+
+            <LineChart  data={cpus} >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <Tooltip />
@@ -106,13 +121,15 @@ export default function Home() {
               }
               )}
             </LineChart>
+              </ResponsiveContainer>
           </div>
-
           {Object.keys(cpusUsage).map((cpu: string, index: number) => {
-
             return <div className='dashboard'>
+
               <p>{cpu} usage in last minute</p>
-              <LineChart className='dash' width={600} height={300} data={cpusUsage[cpu]} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
+              <ResponsiveContainer width="100%" height={300}>
+
+              <LineChart className='dash' data={cpusUsage[cpu]}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <Tooltip />
@@ -124,12 +141,14 @@ export default function Home() {
                   dataKey='usage'
                   stroke={lineColors[index]}
                   strokeWidth={2}
-                />
+                  />
               </LineChart>
+                  </ResponsiveContainer>
             </div>
           })}
         </div>
       </main>
+      <ToastContainer/>
     </>
   )
 }

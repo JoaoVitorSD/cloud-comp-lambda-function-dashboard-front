@@ -1,7 +1,7 @@
 export interface Box{
     name: string;
     description: string;
-    value: number;
+    value: number|null;
 }
 
 export interface RedisData{

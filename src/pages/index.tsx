@@ -24,7 +24,7 @@ export default function Home() {
 
   function loadData(iteration:number){
     fetch('/api/redis')
-      .then(response => {if(response.status == 200) return response;
+      .then(response => {if(response.status == 200) return response.json();
         alert("Failed to load data")
         throw new Error('Failed to load data');
       })

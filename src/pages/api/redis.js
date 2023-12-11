@@ -1,9 +1,10 @@
 import IORedis from 'ioredis';
 export default async function handler(req, res) {
+  
   const redisKey = 'joaodepollo-proj3-output';
   const client = new IORedis({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
+    host:"localhost",
+    port: 6379,
   });
   try{
     const data = await client.get(redisKey);

@@ -69,7 +69,7 @@ export default function Home() {
     if(increment === 1){
       toast.dismiss(toastId);
     }
-    setTimeout(() => alternateLoadData(increment+1), 10000);
+    setTimeout(() => alternateLoadData(increment+1), 5000);
 
   }
 

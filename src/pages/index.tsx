@@ -79,10 +79,11 @@ export default function Home() {
           <div className='box-container'>
           <Box name='Cached Response' description='Percentage of response that had cached.' value={data.cached_percent} />
           <Box name='Outgoing Traffic' description='Percentage of response in relation to request.' value={data.outgoing_traffic} />
+          <Box name='Memory Usage' description='Vrtual Memory Used' value={data['virtual_memory-used']} />
           </div>
 
         <div className='dashboard'>
-          <p>CPUs usage in last 10 seconds</p>
+          <p>CPUs AVG usage in last 10 seconds</p>
         <LineChart  width={600} height={300} data={cpus} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />

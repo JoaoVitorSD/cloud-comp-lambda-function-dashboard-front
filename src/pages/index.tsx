@@ -24,8 +24,11 @@ export default function Home() {
 
   function loadData(iteration:number){
     fetch('/api/redis')
-      .then(response => response.json())
-      .then(data => {
+      .then(response => {if(response.status == 200) return response;
+        alert("Failed to load data")
+        throw new Error('Failed to load data');
+      })
+      .then((data:any) => {
         const parsed = data.cpus_avg.reduce((acc:any, cpu: any) => {
           const keys = Object.keys(cpu);
           const key = `${keys[0]}`;

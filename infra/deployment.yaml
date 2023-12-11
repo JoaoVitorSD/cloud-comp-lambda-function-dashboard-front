@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard-front-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dashboard-front
+  template:
+    metadata:
+      labels:
+        app: dashboard-front
+    spec:
+      containers:
+        - name: dashboard-front
+          image: joaovitorsd/lambda-dashboard-analysis:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REDIS_HOST
+              value: 192.168.121.66
+            - name: REDIS_PORT
+              value: "6379"

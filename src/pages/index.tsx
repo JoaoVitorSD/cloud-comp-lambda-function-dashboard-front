@@ -2,13 +2,12 @@ import Head from 'next/head'
 import Box from '@components/box'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useEffect, useState } from 'react';
-import { Id, ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 export default function Home() {
 
 
   const [cpus, setCpus] = useState<any>([]);
   const [cpuKeys, setCpusKey] = useState<any>([]);
+  const [outputsAvg, setOutputsAvg] = useState<number[]>([]);
   const [interation, setInteration] = useState<number>(1);
 
   const [cpusUsage, setCpusUsage] = useState<any>({});
@@ -24,13 +23,6 @@ export default function Home() {
     await fetch('/api/redis')
       .then(response => {
         if (response.status == 200) return response.json();
-        toast.error("Failed to load data", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true
-        })
         return null;
       })
       .then((data: any) => {
@@ -41,12 +33,17 @@ export default function Home() {
           acc[key] = parseFloat(cpu[key].toFixed(2));
           return acc;
         }, {});
-        if (iteration > 10) {
-          iteration = 10;
+        if (iteration > 12) {
+          iteration = 12;
+          // let newCpus = [...cpus.slice(1), { 'name': iteration, ...parsed }]
           setCpus((prevCpus: any) => [...prevCpus.filter((cpu: any) => cpu.name != 1).map((cpu: any) => ({ ...cpu, 'name': cpu.name <= 1 ? 1 : cpu.name - 1 })), { 'name': iteration, ...parsed }]);
+          setOutputsAvg((prevOutpus: any)=> prevOutpus.filter((output:any)=> output.name != 1).map((output:any)=> ({...output, 'name': output.name <= 1 ? 1 : output.name - 1})).concat({ 'name': iteration, 'value': data.outgoing_traffic/(1024**2) }))
         } else {
           setCpus((prevCpus: any) => [...prevCpus, { 'name': iteration, ...parsed }])
+          setOutputsAvg((prevOutpus: any)=> [...prevOutpus, { 'name': iteration, 'value': data.outgoing_traffic/(1024**2) }])
         }
+
+
 
         const usages = Object.keys(data.cpu_stats).reduce((acc: any, cpuKey: any) => {
           acc[cpuKey] = data.cpu_stats[cpuKey].map((cpu: any, index: number) => { return { usage: parseFloat(cpu.usage.toFixed(2)), 'name': index + 1 } });
@@ -61,12 +58,10 @@ export default function Home() {
   }, [])
 
   async function alternateLoadData(increment: number) {
-    if(increment <= 10){
+    if(increment <= 12){
       setInteration(increment);
     }
-    const toastId = toast("Loading data", { isLoading: true, position: "top-right" })
     await loadData(increment);
-    toast.dismiss(toastId);
     setTimeout(() => alternateLoadData(increment + 1), 5000);
 
   }
@@ -97,7 +92,7 @@ export default function Home() {
           </div>
 
           <div className='dashboard'>
-            <p>CPUs AVG usage in last {interation*5} seconds</p>
+            <p>CPUs AVG usage in last {`${interation == 12 ? "last minute" :  interation*5 + " seconds" }`} </p>
             <ResponsiveContainer width="100%" height={300}>
 
               <LineChart data={cpus} >
@@ -121,8 +116,27 @@ export default function Home() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+          <div className='dashboard'>
+            <p>Output traffic AVG  in last {`${interation == 12 ? "last minute" : interation * 5 + " seconds"}`} (in MB)</p>
+            <ResponsiveContainer width="100%" height={300}>
+
+              <LineChart data={outputsAvg} >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <Tooltip />
+                <YAxis />
+                <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey={"value"}
+                      stroke={lineColors[0]}
+                      strokeWidth={2}
+                    />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
           {Object.keys(cpusUsage).map((cpu: string, index: number) => {
-            return <div className='dashboard'>
+            return <div className='dashboard' key={index}>
 
               <p>{cpu} usage in last minute</p>
               <ResponsiveContainer width="100%" height={300}>
@@ -146,7 +160,6 @@ export default function Home() {
           })}
         </div>
       </main>
-      <ToastContainer />
     </>
   )
 }

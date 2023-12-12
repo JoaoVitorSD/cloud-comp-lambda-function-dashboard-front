@@ -37,10 +37,10 @@ export default function Home() {
           iteration = 12;
           // let newCpus = [...cpus.slice(1), { 'name': iteration, ...parsed }]
           setCpus((prevCpus: any) => [...prevCpus.filter((cpu: any) => cpu.name != 1).map((cpu: any) => ({ ...cpu, 'name': cpu.name <= 1 ? 1 : cpu.name - 1 })), { 'name': iteration, ...parsed }]);
-          setOutputsAvg((prevOutpus: any)=> prevOutpus.filter((output:any)=> output.name != 1).map((output:any)=> ({...output, 'name': output.name <= 1 ? 1 : output.name - 1})).concat({ 'name': iteration, 'value': data.outgoing_traffic/(1024**2) }))
+          setOutputsAvg((prevOutpus: any)=> prevOutpus.filter((output:any)=> output.name != 1).map((output:any)=> ({...output, 'name': output.name <= 1 ? 1 : output.name - 1})).concat({ 'name': iteration, 'value': data.outgoing_traffic }))
         } else {
           setCpus((prevCpus: any) => [...prevCpus, { 'name': iteration, ...parsed }])
-          setOutputsAvg((prevOutpus: any)=> [...prevOutpus, { 'name': iteration, 'value': data.outgoing_traffic/(1024**2) }])
+          setOutputsAvg((prevOutpus: any)=> [...prevOutpus, { 'name': iteration, 'value': data.outgoing_traffic }])
         }
 
 
@@ -135,6 +135,27 @@ export default function Home() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+
+          <div className='dashboard'>
+            <p>Outputs Sent in last minute(in MB)</p>
+            <ResponsiveContainer width="100%" height={300}>
+
+              <LineChart data={data.outputs} >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <Tooltip />
+                <YAxis />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey={"sent"}
+                  stroke={lineColors[0]}
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
           {Object.keys(cpusUsage).map((cpu: string, index: number) => {
             return <div className='dashboard' key={index}>
 

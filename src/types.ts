@@ -2,6 +2,7 @@ export interface Box{
     name: string;
     description: string;
     value: number|null;
+    isLoading: boolean;
 }
 
 export interface RedisData{

@@ -11,7 +11,7 @@ export default function Home() {
   const [interation, setInteration] = useState<number>(1);
   const [outputs, setOutputs] = useState<number[]>([]);
   const [cpusUsage, setCpusUsage] = useState<any>({});
-
+  const [loading, setLoading] = useState<boolean>(false);
 
   const lineColors = ['#8884d8', '#82ca9d', '#aa8437', '#ff7f0e', '#d62728', '#9467bd', '#8c564b',
     '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#1f77b4', '#aec7e8', '#ffbb78', '#98df8a', '#ff9896',
@@ -19,6 +19,7 @@ export default function Home() {
   const [data, setData] = useState<any>({});
 
   async function loadData(iteration: number) {
+    setLoading(true);
 
     await fetch('/api/redis')
       .then(response => {
@@ -53,6 +54,7 @@ export default function Home() {
         setOutputs(outputs);
         setData(data)
       })
+      setLoading(false);
   }
   useEffect(() => {
     alternateLoadData(1);
@@ -86,10 +88,10 @@ export default function Home() {
       <main>
         <div className='dashboard-container'>
           <div className='box-container'>
-            <Box name='Cached Response' description='Percentage of response that had cached.' value={data.cached_percent} />
-            <Box name='Outgoing Traffic' description='Response Size in relation to AVG' value={data.outgoing_traffic} />
-            <Box name='Memory Usage' description='Virtual Memory Used' value={data.virtual_memory_used} />
-            <Box name='Memory Available' description='Virtual Memory Available' value={data.virtual_memory_used ? 100 - data.virtual_memory_used : null} />
+            <Box isLoading={loading} name='Cached Response' description='Percentage of response that had cached.' value={data.cached_percent} />
+            <Box isLoading={loading} name='Outgoing Traffic' description='Response Size in relation to AVG' value={data.outgoing_traffic} />
+            <Box isLoading={loading} name='Memory Usage' description='Virtual Memory Used' value={data.virtual_memory_used} />
+            <Box isLoading={loading} name='Memory Available' description='Virtual Memory Available' value={data.virtual_memory_used ? 100 - data.virtual_memory_used : null} />
           </div>
 
           <div className='dashboard'>

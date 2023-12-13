@@ -86,7 +86,7 @@ export default function Home() {
         <div className='dashboard-container'>
           <div className='box-container'>
             <Box name='Cached Response' description='Percentage of response that had cached.' value={data.cached_percent} />
-            <Box name='Outgoing Traffic' description='Percentage of response in relation to request.' value={data.outgoing_traffic} />
+            <Box name='Outgoing Traffic' description='Response Size in relation to AVG' value={data.outgoing_traffic} />
             <Box name='Memory Usage' description='Vrtual Memory Used' value={data.virtual_memory_used} />
             <Box name='Memory Available' description='Vrtual Memory Available' value={data.virtual_memory_used ? 100 - data.virtual_memory_used : null} />
           </div>

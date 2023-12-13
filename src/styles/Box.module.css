@@ -14,9 +14,11 @@
 .box:hover {
     box-shadow: 0 5 10px 0 rgba(0, 0, 0, 0.8);
     padding: 20px;
+    cursor: pointer;
 }
 .box-info{
     border-right: 1px solid #ccc;
+    padding-right: 10px;
 }
 .box span{
     font-size: 10px;

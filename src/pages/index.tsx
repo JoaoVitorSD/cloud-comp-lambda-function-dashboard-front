@@ -9,7 +9,7 @@ export default function Home() {
   const [cpuKeys, setCpusKey] = useState<any>([]);
   const [outputsAvg, setOutputsAvg] = useState<number[]>([]);
   const [interation, setInteration] = useState<number>(1);
-
+  const [outputs, setOutputs] = useState<number[]>([]);
   const [cpusUsage, setCpusUsage] = useState<any>({});
 
 
@@ -33,23 +33,24 @@ export default function Home() {
           acc[key] = parseFloat(cpu[key].toFixed(2));
           return acc;
         }, {});
+
         if (iteration > 12) {
           iteration = 12;
-          // let newCpus = [...cpus.slice(1), { 'name': iteration, ...parsed }]
           setCpus((prevCpus: any) => [...prevCpus.filter((cpu: any) => cpu.name != 1).map((cpu: any) => ({ ...cpu, 'name': cpu.name <= 1 ? 1 : cpu.name - 1 })), { 'name': iteration, ...parsed }]);
-          setOutputsAvg((prevOutpus: any)=> prevOutpus.filter((output:any)=> output.name != 1).map((output:any)=> ({...output, 'name': output.name <= 1 ? 1 : output.name - 1})).concat({ 'name': iteration, 'value': data.outgoing_traffic }))
+          setOutputsAvg((prevOutpus: any)=> prevOutpus.filter((output:any)=> output.name != 1).map((output:any)=> ({...output, 'name': output.name <= 1 ? 1 : output.name - 1})).concat({ 'name': iteration, 'value': parseFloat(data.outgoing_traffic.toFixed(2)) }))
         } else {
           setCpus((prevCpus: any) => [...prevCpus, { 'name': iteration, ...parsed }])
-          setOutputsAvg((prevOutpus: any)=> [...prevOutpus, { 'name': iteration, 'value': data.outgoing_traffic }])
+          setOutputsAvg((prevOutpus: any)=> [...prevOutpus, { 'name': iteration, 'value':  parseFloat(data.outgoing_traffic.toFixed(2))}])
         }
-
-
-
         const usages = Object.keys(data.cpu_stats).reduce((acc: any, cpuKey: any) => {
           acc[cpuKey] = data.cpu_stats[cpuKey].map((cpu: any, index: number) => { return { usage: parseFloat(cpu.usage.toFixed(2)), 'name': index + 1 } });
           return acc;
         }, {})
         setCpusUsage(usages);
+        const outputs = data.outputs.map((cpuKey: any, index:number) => {
+          return { sent: parseFloat(cpuKey.sent.toFixed(2)), 'name': index + 1 }
+        })
+        setOutputs(outputs);
         setData(data)
       })
   }
@@ -87,8 +88,8 @@ export default function Home() {
           <div className='box-container'>
             <Box name='Cached Response' description='Percentage of response that had cached.' value={data.cached_percent} />
             <Box name='Outgoing Traffic' description='Response Size in relation to AVG' value={data.outgoing_traffic} />
-            <Box name='Memory Usage' description='Vrtual Memory Used' value={data.virtual_memory_used} />
-            <Box name='Memory Available' description='Vrtual Memory Available' value={data.virtual_memory_used ? 100 - data.virtual_memory_used : null} />
+            <Box name='Memory Usage' description='Virtual Memory Used' value={data.virtual_memory_used} />
+            <Box name='Memory Available' description='Virtual Memory Available' value={data.virtual_memory_used ? 100 - data.virtual_memory_used : null} />
           </div>
 
           <div className='dashboard'>
@@ -140,7 +141,7 @@ export default function Home() {
             <p>Outputs Sent in last minute(in MB)</p>
             <ResponsiveContainer width="100%" height={300}>
 
-              <LineChart data={data.outputs} >
+              <LineChart data={outputs} >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <Tooltip />
